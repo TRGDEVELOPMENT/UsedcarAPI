@@ -1,7 +1,6 @@
 const apiCache = require("apicache");
 const { authJwt } = require("../../middleware");
 const customerprefix = require("../../controllers/setting/customerprefix.controller");
-const router = require("express").Router();
 let cache = apiCache.middleware;
 
 module.exports = function (app) {
@@ -10,6 +9,8 @@ module.exports = function (app) {
       next();
     });
     app.get("/api/setting/customerprefix/list", [authJwt.verifyToken], customerprefix.getPrefixList);
-    app.put("/api/setting/customerprefix/update",[authJwt.verifyToken], customerprefix.updatePrefixById)
+    app.put("/api/setting/customerprefix/update",[authJwt.verifyToken], customerprefix.updatePrefixById);
+    app.put("/api/setting/customerprefix/delete",[authJwt.verifyToken], customerprefix.deletePrefixById);
+    app.post("/api/setting/customerprefix/insert",[authJwt.verifyToken], customerprefix.insertPrefix);
   };
   

@@ -1,10 +1,19 @@
 module.exports = (sequelize, Sequelize) => {
-    const osusr_x6q_customerprefix = sequelize.define("OSUSR_X6Q_CUSTOMERPREFIX", {
+    const customerprefix = sequelize.define("OSUSR_X6Q_CUSTOMERPREFIX", {
       ID: {type: Sequelize.INTEGER,primaryKey: true, autoIncrement: true },
-      applicationName: {type: Sequelize.STRING(250)},
-      username: {type: Sequelize.STRING(250)},
-      ipAddress: {type: Sequelize.STRING(250)},
-      loginDate: {type: Sequelize.DATE},
+      TEXT: {type: Sequelize.STRING(50)},
+      CUSTOMERTYPESTATICID: {type: Sequelize.INTEGER},
+      DESCRIPTION: {type: Sequelize.STRING(250)},
+      ISACTIVE: {type: Sequelize.BOOLEAN},
+      CREATORID: {type: Sequelize.STRING(50)},
+      CREATORNAME: {type: Sequelize.STRING(200)},
+      CREATEDDATE: { type: Sequelize.DATE },
+      MODIFIEDID: {type: Sequelize.STRING(50)},
+      MODIFIEDNAME: {type: Sequelize.STRING(200)},
+      MODIFIEDDATE: { type: Sequelize.DATE },
+      DELETEDID: {type: Sequelize.STRING(50)},
+      DELETEDNAME: {type: Sequelize.STRING(200)},
+      DELETEDDATE: { type: Sequelize.DATE },
     });
-    return osusr_x6q_customerprefix;
+    return customerprefix;
 };

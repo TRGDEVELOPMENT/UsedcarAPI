@@ -19,5 +19,5 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.authLogs = require("./logs.model.js")(sequelize, Sequelize);
-db.osusr_x6q_customerprefix = require("./setting/osusr_x6q_customerprefix.model.js")(sequelize, Sequelize);
+db.customerprefix = require("./setting/osusr_x6q_customerprefix.model.js")(sequelize, Sequelize);
 module.exports = db;

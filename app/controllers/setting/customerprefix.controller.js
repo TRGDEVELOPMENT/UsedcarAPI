@@ -1,16 +1,9 @@
 const db = require("../../models");
 const { common } = require("../../middleware");
-const fs = require("fs");
-const Users = db.outsourceAccount;
-const Op = db.Sequelize.Op;
-const path = require("path");
-const moment = require("moment");
-const { DATE } = require("sequelize");
 const sqlString = require("sqlstring");
 const { console } = require("inspector");
 const { log } = require("console");
 exports.getPrefixList = async (req, res) => {
-  console.log("Get List")
     const key = req.query["key"];
     const page = req.query["page"];
     const offset = 10*(page-1<=0?0:page-1);
@@ -67,8 +60,8 @@ exports.getPrefixList = async (req, res) => {
         let i = 0;
         let createdate,modifydate;
         while (i in data) {
-          createdate = new Date(data[i]["CREATEDDATE"]).toISOString().slice(0, 10).split('-').reverse().join('/');
-          modifydate = new Date(data[i]["MODIFIEDDATE"]).toISOString().slice(0, 10).split('-').reverse().join('/');
+          createdate = String(new Date(data[i]["CREATEDDATE"]).toISOString().slice(0, 10).split('-').reverse().join('/'));
+          modifydate = String(new Date(data[i]["MODIFIEDDATE"]).toISOString().slice(0, 10).split('-').reverse().join('/')); 
           item.push({
             id: data[i]["ID"],
             no: offset+(i+1),
@@ -77,8 +70,8 @@ exports.getPrefixList = async (req, res) => {
             create_name: data[i]["CREATORNAME"],
             modify_id: data[i]["MODIFIEDID"],
             modify_name: data[i]["MODIFIEDNAME"],
-            create_date: (createdate=="01/01/1900"?"":createdate),
-            modify_date: (modifydate=="01/01/1900"?"":modifydate),
+            create_date: createdate.replace("01/01/1900","").replace("01/01/1970",""),
+            modify_date: modifydate.replace("01/01/1900","").replace("01/01/1970",""),
             isactive: data[i]["ISACTIVE"] == "1" ? true : false,
             page: page,
           }); i++;
@@ -86,28 +79,63 @@ exports.getPrefixList = async (req, res) => {
         jsonData.push({ data: item,totaldata:totaldata })
       })
       .catch((e) => {
-        console.log(e);
         res.status(500).send("error");
       });
     return res.status(200).send(jsonData);
   }
-  
-exports.updatePrefixById = async (req, res) => {
+  exports.updatePrefixById = async (req, res) => {
   const jsonData = JSON.parse(JSON.stringify(req.body));
   const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
   const sqlCommand = "UPDATE OSUSR_X6Q_CUSTOMERPREFIX SET ? WHERE ? ";
-  console.log(jsonData.data[0]);
-  // const id = {ID: jsonData.data[0]["id"]};
-  // const data = {
-  //   TEXT: jsonData.data[0]["TEXT"],
-  //   CREATORID: jsonData.data[0]["create_id"],
-  //   CREATORNAME: jsonData.data[0]["create_name"],
-  //   MODIFIEDID: jsonData.data[0]["modify_id"],
-  //   MODIFIEDNAME: jsonData.data[0]["modify_name"],
-  //   CREATEDDATE: jsonData.data[0]["create_date"],
-  //   MODIFIEDDATE: timestamp,
-  //   ISACTIVE: jsonData.data[0]["isactive"] == "1" ? true : false,
-  // }
-  // await db.sequelize.query(sqlString.format(sqlCommand, [data, id]), { type: db.Sequelize.QueryTypes.UPDATE })
-  //     .then(() => { return res.status(200).send(true);}).catch((err) => { return res.status(500).send(err) });
+  const id = {ID: jsonData.data[0]["id"]};
+  const data = {
+    TEXT: jsonData.data[0]["text"],
+    CREATORID: jsonData.data[0]["create_id"],
+    CREATORNAME: jsonData.data[0]["create_name"],
+    MODIFIEDID: jsonData.data[0]["modify_id"],
+    MODIFIEDNAME: jsonData.data[0]["modify_name"],
+    CREATEDDATE: new Date(jsonData.data[0]["create_date"]).toISOString().slice(0, 19).replace("T", " "),
+    MODIFIEDDATE: timestamp,
+    ISACTIVE: jsonData.data[0]["isactive"]
+  }
+  await db.sequelize.query(sqlString.format(sqlCommand, [data, id]), { type: db.Sequelize.QueryTypes.UPDATE })
+    .then(() => { return res.status(200).send("ok"); }).catch((err) => { return res.status(500).send(err) });
+
+}
+exports.deletePrefixById = async (req, res) => {
+  const jsonData = JSON.parse(JSON.stringify(req.body));
+  const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
+  const sqlCommand = "UPDATE OSUSR_X6Q_CUSTOMERPREFIX SET ? WHERE ? ";
+  const id = {ID: jsonData.data[0]["id"]};
+  const data = {
+    TEXT: jsonData.data[0]["text"],
+    CREATORID: jsonData.data[0]["create_id"],
+    CREATORNAME: jsonData.data[0]["create_name"],
+    MODIFIEDID: jsonData.data[0]["modify_id"],
+    MODIFIEDNAME: jsonData.data[0]["modify_name"],
+    CREATEDDATE: new Date(jsonData.data[0]["create_date"]).toISOString().slice(0, 19).replace("T", " "),
+    MODIFIEDDATE: new Date(jsonData.data[0]["modify_date"]).toISOString().slice(0, 19).replace("T", " "),
+    DELETEDDATE: timestamp,
+    ISACTIVE: jsonData.data[0]["isactive"]
+  }
+  await db.sequelize.query(sqlString.format(sqlCommand, [data, id]), { type: db.Sequelize.QueryTypes.UPDATE })
+    .then(() => { return res.status(200).send("ok"); }).catch((err) => { return res.status(500).send(err) });
+
+}
+exports.insertPrefix = async (req, res) => {
+  const jsonData = JSON.parse(JSON.stringify(req.body));
+  const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
+  const sqlCommand = "INSERT INTO OSUSR_X6Q_CUSTOMERPREFIX SET ? ";
+  const data = {
+    TEXT: jsonData.data[0]["text"],
+    CREATORID: jsonData.data[0]["create_id"],
+    CREATORNAME: jsonData.data[0]["create_name"],
+    MODIFIEDID: jsonData.data[0]["modify_id"],
+    MODIFIEDNAME: jsonData.data[0]["modify_name"],
+    CREATEDDATE: timestamp,
+    ISACTIVE: jsonData.data[0]["isactive"] == "1" ? true : false,
+  }
+  await db.sequelize.query(sqlString.format(sqlCommand, data), { type: db.Sequelize.QueryTypes.INSERT })
+    .then(() => { return res.status(200).send("ok"); }).catch((err) => { return res.status(500).send(err) });
+
 }

@@ -14,7 +14,11 @@ require("./app/routes/account.routes")(app);
 ////customersetting////
 require("./app/routes/setting/customersetting/customerprefix.routes")(app);
 require("./app/routes/setting/customersetting/customertype.routes")(app);
+require("./app/routes/setting/customersetting/customerpayment.routes")(app);
+require("./app/routes/setting/customersetting/customeraddresstype.routes")(app);
 ////
+////access////
+require("./app/routes/setting/assesssetting/customeraddresstype.routes")(app);
 ////
 app.set("trust proxy", true);
 app.all("*", (req, res) => {

@@ -1,6 +1,6 @@
 const apiCache = require("apicache");
 const { authJwt } = require("../../../middleware");
-const customerprefix = require("../../../controllers/setting/customersetting/customerprefix.controller");
+const rooftype = require("../../../controllers/setting/assesssetting/rooftype.controller");
 let cache = apiCache.middleware;
 
 module.exports = function (app) {
@@ -12,23 +12,23 @@ module.exports = function (app) {
     next();
   });
   app.get(
-    "/api/setting/customersetting/customerprefix/list",
+    "/api/setting/assess/rooftype/list",
     [authJwt.verifyToken],
-    customerprefix.getPrefixList
+    rooftype.getRoofTypeList
   );
   app.put(
-    "/api/setting/customersetting/customerprefix/update",
+    "/api/setting/assess/rooftype/update",
     [authJwt.verifyToken],
-    customerprefix.updatePrefixById
+    rooftype.updateRoofTypeById
   );
   app.put(
-    "/api/setting/customersetting/customerprefix/delete",
+    "/api/setting/assess/rooftype/delete",
     [authJwt.verifyToken],
-    customerprefix.deletePrefixById
+    rooftype.deleteRoofTypeById
   );
   app.post(
-    "/api/setting/customersetting/customerprefix/insert",
+    "/api/setting/assess/rooftype/insert",
     [authJwt.verifyToken],
-    customerprefix.insertPrefix
+    rooftype.insertRoofType
   );
 };

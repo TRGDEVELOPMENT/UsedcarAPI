@@ -12,22 +12,22 @@ module.exports = function (app) {
     next();
   });
   app.get(
-    "/api/setting/customertype/list",
+    "/api/setting/customersetting/customertype/list",
     [authJwt.verifyToken],
     customertype.getCustomerTypeList
   );
   app.put(
-    "/api/setting/customertype/update",
+    "/api/setting/customersetting/customertype/update",
     [authJwt.verifyToken],
     customertype.updateCustomerTypeById
   );
   app.put(
-    "/api/setting/customertype/delete",
+    "/api/setting/customersetting/customertype/delete",
     [authJwt.verifyToken],
     customertype.deleteCustomerTypeById
   );
   app.post(
-    "/api/setting/customertype/insert",
+    "/api/setting/customersetting/customertype/insert",
     [authJwt.verifyToken],
     customertype.insertCustomerType
   );

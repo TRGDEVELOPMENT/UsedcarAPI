@@ -29,4 +29,19 @@ db.customertype =
     sequelize,
     Sequelize
   );
+db.customerpayment =
+  require("./setting/customersetting/osusr_x6q_customerpayment.model.js")(
+    sequelize,
+    Sequelize
+  );
+  db.customeraddresstype =
+  require("./setting/customersetting/osusr_x6q_customeraddresstype.model.js")(
+    sequelize,
+    Sequelize
+  );
+  db.rooftype = 
+  require("./setting/assesssetting/osusr_x6q_rooftype.model.js")(
+    sequelize,
+    Sequelize
+  );
 module.exports = db;

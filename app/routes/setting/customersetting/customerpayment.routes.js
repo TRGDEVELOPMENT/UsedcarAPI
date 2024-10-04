@@ -1,6 +1,6 @@
 const apiCache = require("apicache");
 const { authJwt } = require("../../../middleware");
-const customerprefix = require("../../../controllers/setting/customersetting/customerprefix.controller");
+const customerpayment = require("../../../controllers/setting/customersetting/customerpayment.controller");
 let cache = apiCache.middleware;
 
 module.exports = function (app) {
@@ -12,23 +12,23 @@ module.exports = function (app) {
     next();
   });
   app.get(
-    "/api/setting/customersetting/customerprefix/list",
+    "/api/setting/customersetting/customerpayment/list",
     [authJwt.verifyToken],
-    customerprefix.getPrefixList
+    customerpayment.getCustomerPaymentList
   );
   app.put(
-    "/api/setting/customersetting/customerprefix/update",
+    "/api/setting/customersetting/customerpayment/update",
     [authJwt.verifyToken],
-    customerprefix.updatePrefixById
+    customerpayment.updateCustomerPaymentById
   );
   app.put(
-    "/api/setting/customersetting/customerprefix/delete",
+    "/api/setting/customersetting/customerpayment/delete",
     [authJwt.verifyToken],
-    customerprefix.deletePrefixById
+    customerpayment.deletePaymentById
   );
   app.post(
-    "/api/setting/customersetting/customerprefix/insert",
+    "/api/setting/customersetting/customerpayment/insert",
     [authJwt.verifyToken],
-    customerprefix.insertPrefix
+    customerpayment.insertPayment
   );
 };

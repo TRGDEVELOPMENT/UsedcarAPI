@@ -44,4 +44,24 @@ db.customerpayment =
     sequelize,
     Sequelize
   );
+  db.financestatus = 
+  require("./setting/assesssetting/osusr_x6q_financestatus.model.js")(
+    sequelize,
+    Sequelize
+  );
+  db.rerentstatus = 
+  require("./setting/assesssetting/osusr_x6q_rerentstatus.model.js")(
+    sequelize,
+    Sequelize
+  );
+  db.role =
+  require("./setting/user/osusr_x6q_role.model.js")(
+    sequelize,
+    Sequelize
+  );
+  db.remark =
+  require("./setting/remark/osusr_x6q_remark.model.js")(
+    sequelize,
+    Sequelize
+  );
 module.exports = db;

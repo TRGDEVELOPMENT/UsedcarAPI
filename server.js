@@ -18,7 +18,15 @@ require("./app/routes/setting/customersetting/customerpayment.routes")(app);
 require("./app/routes/setting/customersetting/customeraddresstype.routes")(app);
 ////
 ////access////
-require("./app/routes/setting/assesssetting/customeraddresstype.routes")(app);
+require("./app/routes/setting/assesssetting/rooftype.routes")(app);
+require("./app/routes/setting/assesssetting/financestatus.routes")(app);
+require("./app/routes/setting/assesssetting/rerentstatus.routes")(app);
+////
+////remark////
+require("./app/routes/setting/remark/remark.routes")(app);
+////
+////user/////
+require("./app/routes/setting/user/role.routes")(app);
 ////
 app.set("trust proxy", true);
 app.all("*", (req, res) => {

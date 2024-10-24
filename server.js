@@ -27,6 +27,7 @@ require("./app/routes/setting/remark/remark.routes")(app);
 ////
 ////user/////
 require("./app/routes/setting/user/role.routes")(app);
+require("./app/routes/setting/user/employee.routes")(app);
 ////
 app.set("trust proxy", true);
 app.all("*", (req, res) => {

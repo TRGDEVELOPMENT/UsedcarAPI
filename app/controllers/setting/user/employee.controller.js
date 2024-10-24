@@ -3,7 +3,7 @@ const { common } = require("../../../middleware");
 const sqlString = require("sqlstring");
 const { console } = require("inspector");
 const { log } = require("console");
-exports.getRoleList = async (req, res) => {
+exports.getEmployeeList = async (req, res) => {
   const key = req.query["key"];
   const page = req.query["page"];
   const offset = 5 * (page - 1 <= 0 ? 0 : page - 1);
@@ -11,45 +11,33 @@ exports.getRoleList = async (req, res) => {
   let sqlCommand;
   if (key != "") {
     sqlCommand =
-      "SELECT ENROLE.ID ID, ENROLE.NAME NAME, " +
-      "ENROLE.DESCRIPTION DESCRIPTION, CASE WHEN ENROLE.ISACTIVE = TRUE THEN 1 ELSE 0 END AS ISACTIVE, " +
-      "ENROLE.CREATORID CREATORID, ENROLE.CREATORNAME CREATORNAME, " +
-      "ENROLE.CREATEDDATE CREATEDDATE, ENROLE.MODIFIEDID MODIFIEDID, " +
-      "ENROLE.MODIFIEDNAME MODIFIEDNAME, ENROLE.MODIFIEDDATE MODIFIEDDATE, " +
-      "ENROLE.DELETEDID DELETEDID, ENROLE.DELETEDNAME DELETEDNAME, " +
-      "ENROLE.DELETEDDATE DELETEDDATE " +
-      "FROM OSUSR_X6Q_ROLE ENROLE " +
-      "WHERE (ENROLE.ISACTIVE = 1) AND (ENROLE.NAME LIKE '%@key%') " +
-      "ORDER BY ENROLE.ID DESC LIMIT 5 OFFSET @offset";
+    "SELECT ENEMPLOYEE.ID ID, ENEMPLOYEE.EMP_CODE EMPCODE, ENEMPLOYEE.EMP_NAME NAME, ENEMPLOYEE.ROLE ROLE, CASE WHEN ENEMPLOYEE.ISACTIVE = TRUE THEN 1 ELSE 0 END AS ISACTIVE "+
+      "FROM OSUSR_X6Q_EMPLOYEE  ENEMPLOYEE " +
+      "WHERE (ENEMPLOYEE.ISACTIVE = 1) AND (ENEMPLOYEE.EMP_NAME LIKE '%@key%') " +
+      "ORDER BY ENEMPLOYEE.ID DESC LIMIT 5 OFFSET @offset";
     sqlCommand = sqlCommand.replace("@key", key).replace("@offset", offset);
   } else {
     sqlCommand =
-      "SELECT ENROLE.ID ID, ENROLE.NAME NAME, " +
-      "ENROLE.DESCRIPTION DESCRIPTION, CASE WHEN ENROLE.ISACTIVE = TRUE THEN 1 ELSE 0 END AS ISACTIVE, " +
-      "ENROLE.CREATORID CREATORID, ENROLE.CREATORNAME CREATORNAME, " +
-      "ENROLE.CREATEDDATE CREATEDDATE, ENROLE.MODIFIEDID MODIFIEDID, " +
-      "ENROLE.MODIFIEDNAME MODIFIEDNAME, ENROLE.MODIFIEDDATE MODIFIEDDATE, " +
-      "ENROLE.DELETEDID DELETEDID, ENROLE.DELETEDNAME DELETEDNAME, " +
-      "ENROLE.DELETEDDATE DELETEDDATE " +
-      "FROM OSUSR_X6Q_ROLE ENROLE " +
-      "WHERE (ENROLE.ISACTIVE = 1) " +
-      "ORDER BY ENROLE.ID DESC LIMIT 5 OFFSET @offset";
+    "SELECT ENEMPLOYEE.ID ID, ENEMPLOYEE.EMP_CODE EMPCODE, ENEMPLOYEE.EMP_NAME NAME, ENEMPLOYEE.ROLE ROLE, CASE WHEN ENEMPLOYEE.ISACTIVE = TRUE THEN 1 ELSE 0 END AS ISACTIVE "+
+    "FROM OSUSR_X6Q_EMPLOYEE ENEMPLOYEE " +
+    "WHERE (ENEMPLOYEE.ISACTIVE = 1) AND ENEMPLOYEE.EMP_NAME <> '' " +
+    "ORDER BY ENEMPLOYEE.ID DESC LIMIT 5 OFFSET @offset";
     sqlCommand = sqlCommand.replace("@offset", offset);
   }
   let countsql;
   if (key != "") {
     countsql =
-      "SELECT COUNT(ENROLE.ID) AS Count " +
-      "FROM OSUSR_X6Q_ROLE ENROLE " +
-      "WHERE (ENROLE.ISACTIVE = 1) AND (ENROLE.NAME LIKE '%@key%') " +
-      "ORDER BY ENROLE.ID DESC";
+    "SELECT COUNT(ENEMPLOYEE.ID) AS Count "+
+    "FROM OSUSR_X6Q_EMPLOYEE ENEMPLOYEE " +
+    "WHERE (ENEMPLOYEE.ISACTIVE = 1) AND (ENEMPLOYEE.EMP_NAME LIKE '%@key%') " +
+    "ORDER BY ENEMPLOYEE.ID DESC";
     countsql = countsql.replace("@key", key).replace("@key", key);
   } else {
     countsql =
-      "SELECT COUNT(ENROLE.ID) AS Count " +
-      "FROM OSUSR_X6Q_ROLE ENROLE " +
-      "WHERE (ENROLE.ISACTIVE = 1) " +
-      "ORDER BY ENROLE.ID DESC";
+      "SELECT COUNT(ENEMPLOYEE.ID) AS Count " +
+      "FROM OSUSR_X6Q_EMPLOYEE ENEMPLOYEE " +
+      "WHERE (ENEMPLOYEE.ISACTIVE = 1) AND ENEMPLOYEE.EMP_NAME <> '' " +
+      "ORDER BY ENEMPLOYEE.ID DESC";
   }
   const totaldata = await db.sequelize
     .query(countsql, { type: db.Sequelize.QueryTypes.SELECT })
@@ -64,61 +52,22 @@ exports.getRoleList = async (req, res) => {
     .then(async (data) => {
       const item = [];
       let i = 0;
-      let createdate, modifydate, deletedate;
       while (i in data) {
-        createdate = String(
-          new Date(data[i].CREATEDDATE)
-            .toISOString()
-            .slice(0, 10)
-            .split("-")
-            .reverse()
-            .join("/")
-        );
-        modifydate = String(
-          new Date(data[i].MODIFIEDDATE)
-            .toISOString()
-            .slice(0, 10)
-            .split("-")
-            .reverse()
-            .join("/")
-        );
-        deletedate = String(
-          new Date(data[i].DELETEDDATE)
-            .toISOString()
-            .slice(0, 10)
-            .split("-")
-            .reverse()
-            .join("/")
-        );
         item.push({
           id: data[i].ID,
           no: offset + (i + 1),
+          empcode: data[i].EMPCODE,
           name: data[i].NAME,
-          description: data[i].DESCRIPTION,
+          role: data[i].ROLE,
           isactive: data[i].ISACTIVE == "1" ? true : false,
-          creatorid: data[i].CREATORID,
-          creatorname: data[i].CREATORNAME,
-          createddate: createdate
-            .replace("01/01/1900", "")
-            .replace("01/01/1970", ""),
-          modifiedid: data[i].MODIFIEDID,
-          modifiedname: data[i].MODIFIEDNAME,
-          modifieddate: modifydate
-            .replace("01/01/1900", "")
-            .replace("01/01/1970", ""),
-          deletedid: data[i].DELETEDID,
-          deletedname: data[i].DELETEDNAME,
-          deleteddate: deletedate
-            .replace("01/01/1900", "")
-            .replace("01/01/1970", ""),
         });
         i++;
       }
       jsonData.push({ data: item, totaldata: totaldata });
     })
-    .catch((e) => {
-      res.status(500).send("error");
-    });
+    // .catch((e) => {
+    //   res.status(500).send("error");
+    // });
   return res.status(200).send(jsonData);
 };
 exports.updateRoleById = async (req, res) => {

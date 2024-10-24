@@ -59,6 +59,11 @@ db.customerpayment =
     sequelize,
     Sequelize
   );
+  db.employee =
+  require("./setting/user/osusr_x6q_employee.model.js")(
+    sequelize,
+    Sequelize
+  );
   db.remark =
   require("./setting/remark/osusr_x6q_remark.model.js")(
     sequelize,

@@ -69,4 +69,14 @@ db.customerpayment =
     sequelize,
     Sequelize
   );
+  db.module =
+  require("./setting/user/osusr_x6q_module.js")(
+    sequelize,
+    Sequelize
+  )
+  db.employeeitem = 
+  require("./setting/user/osusr_x6q_employeeitem.js")(
+    sequelize,
+    Sequelize
+  )
 module.exports = db;

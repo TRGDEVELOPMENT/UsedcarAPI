@@ -65,15 +65,50 @@ exports.getEmployeeList = async (req, res) => {
       }
       jsonData.push({ data: item, totaldata: totaldata });
     })
-    // .catch((e) => {
-    //   res.status(500).send("error");
-    // });
+    .catch((e) => {
+      res.status(500).send("error");
+    });
   return res.status(200).send(jsonData);
 };
-exports.updateRoleById = async (req, res) => {
+exports.getModuleList = async (req, res) => {
+  const id = req.query["id"];
+  const jsonData = [];
+  let sqlCommand = 
+  "SELECT TOP (13) ENEMPLOYEEITEM.ID ID, ENEMPLOYEEITEM.EMPLOYEEID EMPLOYEEID, ENEMPLOYEEITEM.MODULEID MODULEID,CASE WHEN ENEMPLOYEEITEM.ISACTIVE = TRUE THEN 1 ELSE 0 END AS ISACTIVE, "+
+  "CASE WHEN ENEMPLOYEEITEM.EDITANDSAVE = TRUE THEN 1 ELSE 0 END AS EDITANDSAVE, CASE WHEN ENEMPLOYEEITEM.APPROVE = TRUE THEN 1 ELSE 0 END AS APPROVE "+
+  "FROM (OSUSR_X6Q_EMPLOYEEITEM ENEMPLOYEEITEM "+
+  "  LEFT JOIN OSUSR_X6Q_MODULE ENMODULE ON (ENEMPLOYEEITEM.MODULEID = ENMODULE.ID)) "+
+  "WHERE ((ENEMPLOYEEITEM.EMPLOYEEID = @id) "+
+  "  AND (ENEMPLOYEEITEM.EMPLOYEEID IS NOT NULL)) "+
+  "ORDER BY ENMODULE.ID DESC ";
+  sqlCommand = sqlCommand.replace('@id',id)
+  await db.sequelize
+    .query(sqlCommand, { type: db.Sequelize.QueryTypes.SELECT })
+    .then(async (data) => {
+      const item = [];
+      let i = 0;
+      while (i in data) {
+        item.push({
+          id: data[i].ID,
+          empcode: data[i].EMPLOYEEID,
+          empcode: data[i].MODULEID,
+          isactive: data[i].ISACTIVE == "1" ? true : false,
+          empcode: data[i].EDITANDSAVE,
+          empcode: data[i].APPROVE,
+        });
+        i++;
+      }
+      jsonData.push({ data: item, totaldata: 0 });
+    })
+    .catch((e) => {
+      res.status(500).send("error");
+    });
+  return res.status(200).send(jsonData);
+};
+exports.updateEmployeeById = async (req, res) => {
   const jsonData = JSON.parse(JSON.stringify(req.body));
   const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
-  const sqlCommand = "UPDATE OSUSR_X6Q_ROLE SET ? WHERE ? ";
+  const sqlCommand = "UPDATE OSUSR_X6Q_EMPLOYEEITEM SET ? WHERE ? ";
   let sdatecreate, sdatedelete;
   if (jsonData.data[0].createddate.trim() != "") {
     sdatecreate = jsonData.data[0].createddate.split("/");

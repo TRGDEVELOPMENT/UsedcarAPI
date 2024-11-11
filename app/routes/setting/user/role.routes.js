@@ -16,6 +16,11 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     role.getRoleList
   );
+  app.get(
+    "/api/setting/user/module/list",
+    [authJwt.verifyToken],
+    role.getModuleList
+  );
   app.put(
     "/api/setting/user/role/update",
     [authJwt.verifyToken],

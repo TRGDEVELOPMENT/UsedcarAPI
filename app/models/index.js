@@ -79,4 +79,9 @@ db.customerpayment =
     sequelize,
     Sequelize
   )
+  db.userroleitem =
+  require("./setting/user/osusr_x6q_userroleitem.model.js")(
+    sequelize,
+    Sequelize
+  )
 module.exports = db;

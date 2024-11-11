@@ -16,11 +16,11 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     employee.getEmployeeList
   );
-  // app.put(
-  //   "/api/setting/user/role/update",
-  //   [authJwt.verifyToken],
-  //   role.updateRoleById
-  // );
+  app.get(
+    "/api/setting/user/employeemodule/list",
+    [authJwt.verifyToken],
+    employee.getModuleList
+  );
   // app.put(
   //   "/api/setting/user/role/delete",
   //   [authJwt.verifyToken],

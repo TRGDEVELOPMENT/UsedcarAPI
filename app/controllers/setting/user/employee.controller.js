@@ -74,8 +74,8 @@ exports.getModuleList = async (req, res) => {
   const id = req.query["id"];
   const jsonData = [];
   let sqlCommand = 
-  "SELECT TOP (13) ENEMPLOYEEITEM.ID ID, ENEMPLOYEEITEM.EMPLOYEEID EMPLOYEEID, ENEMPLOYEEITEM.MODULEID MODULEID,CASE WHEN ENEMPLOYEEITEM.ISACTIVE = TRUE THEN 1 ELSE 0 END AS ISACTIVE, "+
-  "CASE WHEN ENEMPLOYEEITEM.EDITANDSAVE = TRUE THEN 1 ELSE 0 END AS EDITANDSAVE, CASE WHEN ENEMPLOYEEITEM.APPROVE = TRUE THEN 1 ELSE 0 END AS APPROVE "+
+  "SELECT ENEMPLOYEEITEM.ID ID, ENEMPLOYEEITEM.EMPLOYEEID EMPLOYEEID, ENEMPLOYEEITEM.MODULEID MODULEID,CASE WHEN ENEMPLOYEEITEM.ISACTIVE = TRUE THEN 1 ELSE 0 END AS ISACTIVE, "+
+  "CASE WHEN ENEMPLOYEEITEM.EDITANDSAVE = TRUE THEN 1 ELSE 0 END AS EDITANDSAVE, CASE WHEN ENEMPLOYEEITEM.APPROVE = TRUE THEN 1 ELSE 0 END AS APPROVE, ENMODULE.NAME NAME, ENMODULE.DESCRIPTION DESCRIPTION "+
   "FROM (OSUSR_X6Q_EMPLOYEEITEM ENEMPLOYEEITEM "+
   "  LEFT JOIN OSUSR_X6Q_MODULE ENMODULE ON (ENEMPLOYEEITEM.MODULEID = ENMODULE.ID)) "+
   "WHERE ((ENEMPLOYEEITEM.EMPLOYEEID = @id) "+
@@ -90,12 +90,14 @@ exports.getModuleList = async (req, res) => {
       while (i in data) {
         item.push({
           id: data[i].ID,
-          empcode: data[i].EMPLOYEEID,
-          empcode: data[i].MODULEID,
-          isactive: data[i].ISACTIVE == "1" ? true : false,
-          empcode: data[i].EDITANDSAVE,
-          empcode: data[i].APPROVE,
-        });
+          employeeid: data[i].EMPLOYEEID,
+          moduleid: data[i].MODULEID,
+          module: data[i].NAME,
+          description: data[i].DESCRIPTION,
+          isaccess: data[i].ISACTIVE == "1" ? true : false,
+          empcode: data[i].EDITANDSAVE == "1" ? true : false,
+          empcode: data[i].APPROVE == "1" ? true : false,
+        }); 
         i++;
       }
       jsonData.push({ data: item, totaldata: 0 });

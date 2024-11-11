@@ -121,6 +121,93 @@ exports.getRoleList = async (req, res) => {
     });
   return res.status(200).send(jsonData);
 };
+exports.getModuleList = async (req, res) => {
+  const id = req.query["id"];
+  const jsonData = [];
+  let sqlCommand;
+  console.log(id);
+  sqlCommand =
+  "SELECT ENMODULE.ID EMODULEID, ENMODULE.NAME NAME, ENMODULE.DESCRIPTION DESCRIPTION, ENMODULE.ISACTIVE o3, "+
+  "ENMODULE.CREATORID o4, ENMODULE.CREATORNAME o5, ENMODULE.CREATEDDATE o6, "+
+  "ENMODULE.MODIFIEDID o7, ENMODULE.MODIFIEDNAME o8, ENMODULE.MODIFIEDDATE o9, "+
+  "ENMODULE.DELETEDID o10, ENMODULE.DELETEDNAME o11, ENMODULE.DELETEDDATE o12, "+
+  "ENROLEITEM.ID ID, ENROLEITEM.ROLEID ROLEID, ENROLEITEM.MODULEID MODULEID, CASE WHEN ENROLEITEM.ISACTIVE = TRUE THEN 1 ELSE 0 END AS ISACTIVE, "+
+  "CASE WHEN ENROLEITEM.APPROVE = TRUE THEN 1 ELSE 0 END AS APPROVE, ENROLEITEM.DESCRIPTION o16, ENROLEITEM.CREATORID CREATORID, "+
+  "ENROLEITEM.CREATORNAME CREATORNAME, ENROLEITEM.CREATEDDATE CREATEDDATE, ENROLEITEM.MODIFIEDID MODIFIEDID, "+
+  "ENROLEITEM.MODIFIEDNAME MODIFIEDNAME, ENROLEITEM.MODIFIEDDATE MODIFIEDDATE, ENROLEITEM.DELETEDID DELETEDID, "+
+  "ENROLEITEM.DELETEDNAME DELETEDNAME, ENROLEITEM.DELETEDDATE DELETEDDATE "+
+  "FROM (OSUSR_X6Q_MODULE ENMODULE "+
+	"LEFT JOIN OSUSR_X6Q_USERROLEITEM ENROLEITEM ON (ENMODULE.ID = ENROLEITEM.MODULEID)) "+
+  "WHERE (((ENROLEITEM.ROLEID = @id) "+
+	"AND (ENROLEITEM.ROLEID IS NOT NULL)) OR (ENROLEITEM.ID IS NULL)) "+
+	"AND (ENMODULE.ISACTIVE = 1) "+
+  "ORDER BY ENMODULE.ID DESC ";
+  sqlCommand = sqlCommand.replace("@id",id);
+  await db.sequelize
+    .query(sqlCommand, { type: db.Sequelize.QueryTypes.SELECT })
+    .then(async (data) => {
+      const item = [];
+      let i = 0;
+      let createdate, modifydate, deletedate;
+      while (i in data) {
+        createdate = String(
+          new Date(data[i].CREATEDDATE)
+            .toISOString()
+            .slice(0, 10)
+            .split("-")
+            .reverse()
+            .join("/")
+        );
+        modifydate = String(
+          new Date(data[i].MODIFIEDDATE)
+            .toISOString()
+            .slice(0, 10)
+            .split("-")
+            .reverse()
+            .join("/")
+        );
+        deletedate = String(
+          new Date(data[i].DELETEDDATE)
+            .toISOString()
+            .slice(0, 10)
+            .split("-")
+            .reverse()
+            .join("/")
+        );
+        item.push({
+          id: data[i].ID,
+          roleid: data[i].ROLEID,
+          emoduleid: data[i].EMODULEID,
+          moduleid: data[i].MODULEID,
+          name: data[i].NAME,
+          isactive: data[i].ISACTIVE == "1" ? true : false,
+          approve: data[i].APPROVE == "1" ? true : false,
+          description: data[i].DESCRIPTION,
+          creatorid: data[i].CREATORID,
+          creatorname: data[i].CREATORNAME,
+          createddate: createdate
+            .replace("01/01/1900", "")
+            .replace("01/01/1970", ""),
+          modifiedid: data[i].MODIFIEDID,
+          modifiedname: data[i].MODIFIEDNAME,
+          modifieddate: modifydate
+            .replace("01/01/1900", "")
+            .replace("01/01/1970", ""),
+          deletedid: data[i].DELETEDID,
+          deletedname: data[i].DELETEDNAME,
+          deleteddate: deletedate
+            .replace("01/01/1900", "")
+            .replace("01/01/1970", ""),
+        });
+        i++;
+      }
+      jsonData.push({ data: item, totaldata: 0 });
+    })
+    // .catch((e) => {
+    //   res.status(500).send("error");
+    // });
+  return res.status(200).send(jsonData);
+};
 exports.updateRoleById = async (req, res) => {
   const jsonData = JSON.parse(JSON.stringify(req.body));
   const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
